@@ -4,8 +4,6 @@ import json
 import os
 import signal
 import sys
-from optparse import OptionParser
-from pprint import pprint
 
 import yaml
 
