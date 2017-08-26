@@ -1,0 +1,10 @@
+# Split Expenses configuration file
+users:
+  - alice
+  - bob
+
+json_output:
+  name: "expenses.json"
+  enable: true
+  encrypt: true
+  overwrite_duplicate_month: false
