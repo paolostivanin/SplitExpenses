@@ -15,6 +15,7 @@ from splitexpenses.cryptutils import CryptUtils
 
 # TODO test for wrong config (eg enc file set but not enc)
 # TODO show graph
+# TODO better README
 
 
 def exit_gracefully(signum, frame):
@@ -106,12 +107,16 @@ def update_json(user_data, filename, encrypted, overwrite_duplicate, password):
         merge_data(data_from_file, user_data, overwrite_duplicate)
         cu.encrypt(data_from_file)
     else:
-        with open(file_path, "r+") as f:
-            data_from_file = json.load(f)
-            merge_data(data_from_file, user_data, overwrite_duplicate)
-            f.seek(0)
-            json.dump(data_from_file, f)
-            f.truncate()
+        if Path(file_path).is_file():
+            with open(file_path, "r+") as f:
+                data_from_file = json.load(f)
+                merge_data(data_from_file, user_data, overwrite_duplicate)
+                f.seek(0)
+                json.dump(data_from_file, f)
+                f.truncate()
+        else:
+            with open(file_path, "w") as f:
+                json.dump(user_data, f)
 
 
 def merge_data(data_from_file, user_data, overwrite_duplicate):
@@ -154,12 +159,13 @@ def main():
     yaml_data = get_config_data()
     encrypt = yaml_data["json_output"]["encrypt"]
 
-    if sys.argv[1] == "-h":
-        print("Usage:\n\t-h: show this help\n\t-s: show stored data")
-        return
-    elif sys.argv[1] == "-s":
-        show_stored_data(yaml_data)
-        return
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "-h":
+            print("Usage:\n\t-h: show this help\n\t-s: show stored data")
+            return
+        elif sys.argv[1] == "-s":
+            show_stored_data(yaml_data)
+            return
 
     year, month = str(datetime.now().year), datetime.strftime(datetime.now(), '%b')
     user_data = dict()
