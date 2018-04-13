@@ -134,9 +134,11 @@ def merge_data(data_from_file, user_data, overwrite_duplicate):
             else:
                 data_from_file[year].update(user_data[year])
             break
-        else:
+        elif year == next(iter(user_data.keys())):
             data_from_file.update(user_data)
             break
+        else:
+            pass
 
 
 def show_stored_data(config):
@@ -158,16 +160,23 @@ def show_stored_data(config):
 def main():
     yaml_data = get_config_data()
     encrypt = yaml_data["json_output"]["encrypt"]
+    month = None
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "-h":
-            print("Usage:\n\t-h: show this help\n\t-s: show stored data")
+            print("Usage:\n\t-h: show this help\n"
+                  "\t-s: show stored data\n"
+                  "\t-m <month>: overwrite month when writing json")
             return
         elif sys.argv[1] == "-s":
             show_stored_data(yaml_data)
             return
+        elif sys.argv[1] == "-m":
+            month = sys.argv[2]
 
-    year, month = str(datetime.now().year), datetime.strftime(datetime.now(), '%b')
+    year = str(datetime.now().year)
+    if not month:
+        month = str(datetime.strftime(datetime.now(), '%b'))
     user_data = dict()
     user_data[year] = dict()
     user_data[year][month] = dict()
